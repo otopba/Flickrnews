@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Flickr news</string>
+    <string name="app_name">FNews</string>
     <string name="no_connection">No internet connection</string>
     <string name="cant_update">Can\'t update images</string>
     <string name="refresh">Refresh</string>
