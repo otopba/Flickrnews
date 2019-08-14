@@ -1,6 +1,7 @@
 package com.otopba.flick.ui.grid;
 
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
@@ -47,6 +48,12 @@ public class GridFragment extends Fragment implements Colored {
 
     public static final String TAG = GridFragment.class.getName();
     private static final int PORTRAIT_COLUMN_COUNT = 2;
+    private static final float PORTRAIT_IMAGE_MARGIN = 0.05f;
+    private static final float PORTRAIT_IMAGE_SIZE = 0.35f;
+
+    private static final int LANDSCAPE_COLUMN_COUNT = 4;
+    private static final float LANDSCAPE_IMAGE_MARGIN = 0.02f;
+    private static final float LANDSCAPE_IMAGE_SIZE = 0.2f;
 
     @Inject
     AppTheme appTheme;
@@ -122,11 +129,18 @@ public class GridFragment extends Fragment implements Colored {
         Point size = new Point();
         display.getSize(size);
         int width = size.x;
-        gridView.addItemDecoration(new SpacesItemDecoration((int) (width * 0.05)));
 
-        gridAdapter = new GridAdapter(inflater, appTheme, Collections.emptyList(), (int) (width * 0.35));
+        int orientation = getResources().getConfiguration().orientation;
+        boolean landscape = orientation == Configuration.ORIENTATION_LANDSCAPE;
+        float margin = landscape ? LANDSCAPE_IMAGE_MARGIN : PORTRAIT_IMAGE_MARGIN;
+        float imageSize = landscape ? LANDSCAPE_IMAGE_SIZE : PORTRAIT_IMAGE_SIZE;
+        int columnCount = landscape ? LANDSCAPE_COLUMN_COUNT : PORTRAIT_COLUMN_COUNT;
+
+        gridView.addItemDecoration(new SpacesItemDecoration((int) (width * margin), columnCount));
+
+        gridAdapter = new GridAdapter(inflater, appTheme, Collections.emptyList(), (int) (width * imageSize));
         gridView.setAdapter(gridAdapter);
-        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), PORTRAIT_COLUMN_COUNT);
+        GridLayoutManager layoutManager = new GridLayoutManager(getContext(), columnCount);
         gridView.setLayoutManager(layoutManager);
 
         Disposable disposable = gridAdapter.getClickSubject()
@@ -137,7 +151,7 @@ public class GridFragment extends Fragment implements Colored {
 
     private void onImageClick(@NonNull String image) {
         Log.d(TAG, String.format("Click on image %s", image));
-        ((MainActivity) getActivity()).openImage(image);
+        ((MainActivity) getActivity()).openImage(image); //TODO: проверка на нулл
     }
 
     private void onUpdate(@NonNull ControllerUpdate controllerUpdate) {
